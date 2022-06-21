@@ -1,6 +1,6 @@
 # URL QRCode - Generator API
 
-QRCode generating API based on URLs
+QRCode generating API using qrcodejs
 
 ## Table of contents
 
@@ -22,11 +22,12 @@ QRCode generating API based on URLs
 
 ### Built with
 
-- [Apollo GraphQl](https://www.apollographql.com/)
+- [Apollo Server](https://github.com/apollographql/apollo-server)
 - [Express](https://expressjs.com/)
 - [Graphql](https://graphql.org/)
 - [Mongoose](https://mongoosejs.com/)
 - [Mongodb](https://mongodb.com)
+- [qrcode-svg](https://github.com/papnkukn/qrcode-svg)
 
 ### Useful resources
 

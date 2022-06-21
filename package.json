@@ -18,7 +18,8 @@
     "graphql-validation-complexity": "^0.4.2",
     "helmet": "^5.1.0",
     "mongoose": "^6.4.0",
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.16",
+    "qrcode-svg": "^1.1.0"
   },
   "devDependencies": {
     "eslint": "^8.18.0",
