@@ -1,20 +1,13 @@
+// Third parties imports
 require('dotenv').config()
-
 const { ApolloServer, gql } = require('apollo-server-express')
 const express = require('express')
 const cors = require('cors')
-
 const QRCode = require('qrcode-svg')
 
-const generateShortCode = length => {
-  var result = ''
-  var characters = 'abcdefghijklmnopqrstuvwxyz0123456789'
-  var charactersLength = characters.length
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength))
-  }
-  return result
-}
+//project imports
+const db = require('./db')
+const generateShortCode = require('./generateShortCode')
 
 let qrcodes = [
   {
@@ -90,12 +83,12 @@ const resolvers = {
       })
 
       let qrcodeValue = {
+        description: 'Solo links',
         id: String(qrcodes.length + 1),
-        url: url,
-        svgCode: qr.svg(),
         shortCode: generateShortCode(6),
+        svgCode: qr.svg(),
         title: 'Solo',
-        description: 'Solo links'
+        url: url
       }
 
       qrcodes.push(qrcodeValue)
@@ -104,16 +97,18 @@ const resolvers = {
   }
 }
 
-//server
+//connect to db
+const DB_HOST = process.env.DB_HOST
+db.connect(DB_HOST)
+
+//express and apollo server server
 const app = express()
+const port = process.env.PORT || 4000
 const server = new ApolloServer({ typeDefs, resolvers })
 
 // Express Middlewares
 app.use(cors())
 
-const port = process.env.PORT || 4000
-
-//server needs to started before applying middlewares
 server.start().then(() => {
   //Apollo server middlewares
   server.applyMiddleware({ app, path: '/api' })
