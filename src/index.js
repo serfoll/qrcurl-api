@@ -21,7 +21,9 @@ const port = process.env.PORT || 4000
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: () => models
+  context: () => {
+    return { models }
+  }
 })
 
 // Express Middlewares
