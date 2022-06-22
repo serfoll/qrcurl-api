@@ -8,33 +8,7 @@ const QRCode = require('qrcode-svg')
 //project imports
 const db = require('./db')
 const generateShortCode = require('./generateShortCode')
-
-let qrcodes = [
-  {
-    id: '1',
-    url: 'google.com',
-    svgCode: '<svg>1</svg>',
-    shortCode: 'cklao',
-    title: 'Yessir',
-    description: 'first description'
-  },
-  {
-    id: '2',
-    url: 'youtube.com',
-    svgCode: '<svg>2</svg>',
-    shortCode: 'asdja',
-    title: 'Sit',
-    description: 'amet'
-  },
-  {
-    id: '3',
-    url: 'github.com',
-    svgCode: '<svg>3</svg>',
-    shortCode: 'asaf',
-    title: 'orem d',
-    description: 'Ipsum'
-  }
-]
+const models = require('./models')
 
 //basic schema, using GraphQL
 const typeDefs = gql`
@@ -60,13 +34,15 @@ const typeDefs = gql`
 //parameters to resolver functions: (parent, args context, info)
 const resolvers = {
   Query: {
-    qrcodes: () => qrcodes,
-    qrcode: (parent, args) => {
-      return qrcodes.find(qrcode => qrcode.shortCode === args.shortCode)
+    qrcodes: async () => await models.QRCode.find(),
+    qrcode: async (parent, args) => {
+      return await models.QRCode.findOne({
+        shortCode: args.shortCode
+      })
     }
   },
   Mutation: {
-    newQRCode: (parent, args) => {
+    newQRCode: async (parent, args) => {
       let url = args.url
 
       let qr = new QRCode({
@@ -84,15 +60,13 @@ const resolvers = {
 
       let qrcodeValue = {
         description: 'Solo links',
-        id: String(qrcodes.length + 1),
         shortCode: generateShortCode(6),
         svgCode: qr.svg(),
         title: 'Solo',
         url: url
       }
 
-      qrcodes.push(qrcodeValue)
-      return qrcodeValue
+      return await models.QRCode.create(qrcodeValue)
     }
   }
 }
