@@ -2,7 +2,7 @@ const generateShortCode = require('../generateShortCode')
 const QRCodeSvg = require('qrcode-svg')
 
 module.exports = {
-  newQRCode: async (args, { models }) => {
+  newQRCode: async (parent, args, { models }) => {
     let url = args.url
 
     let qr = new QRCodeSvg({

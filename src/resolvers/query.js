@@ -1,6 +1,6 @@
 module.exports = {
-  qrcodes: async ({ models }) => await models.QRCode.find(),
-  qrcode: async (args, { models }) => {
+  qrcodes: async (parent, args, { models }) => await models.QRCode.find(),
+  qrcode: async (parent, args, { models }) => {
     return await models.QRCode.findOne({
       shortCode: args.shortCode
     })
