@@ -2,20 +2,31 @@ const { gql } = require('apollo-server-express')
 
 // GraphQL Schemas
 module.exports = gql`
+  scalar DateTime
+
   type Query {
     qrcodes: [QRCode!]!
     qrcode(shortCode: String!): QRCode!
   }
 
   type QRCode {
-    id: ID!
-    url: String!
-    svgCode: String!
-    shortCode: String!
-    title: String!
+    createdAt: DateTime!
     description: String
+    id: ID!
+    shortCode: String!
+    svgCode: String!
+    title: String!
+    updatedAt: DateTime!
+    url: String!
   }
   type Mutation {
-    newQRCode(url: String!): QRCode!
+    newQRCode(descrition: String, title: String!, url: String!): QRCode!
+    updateQRCode(
+      id: ID!
+      description: String
+      title: String!
+      url: String!
+    ): QRCode!
+    deleteQRCode(id: ID!): Boolean!
   }
 `
