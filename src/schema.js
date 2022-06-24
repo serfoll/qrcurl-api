@@ -5,7 +5,12 @@ module.exports = gql`
   scalar DateTime
 
   type Mutation {
-    newQRCode(description: String, title: String, url: String!): QRCode!
+    newQRCode(
+      description: String
+      hexCode: String!
+      title: String
+      url: String!
+    ): QRCode!
     updateQRCode(
       id: ID!
       description: String
@@ -19,6 +24,7 @@ module.exports = gql`
     author: ID!
     createdAt: DateTime!
     description: String
+    hexCode: String!
     id: ID!
     shortCode: String!
     svgCode: String!

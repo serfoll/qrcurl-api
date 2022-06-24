@@ -8,6 +8,7 @@ const qrcodeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId
     },
     description: { type: String },
+    hexCode: { type: String, required: true },
     shortCode: { type: String, required: true, unique: true },
     svgCode: { type: String, required: true },
     title: { type: String },

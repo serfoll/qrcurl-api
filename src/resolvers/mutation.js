@@ -19,7 +19,7 @@ module.exports = {
   },
   newQRCode: async (
     parent,
-    { description, title, url },
+    { description, hexCode, title, url },
     { models, author }
   ) => {
     partials.QRCode.content = url
@@ -27,6 +27,7 @@ module.exports = {
     let qrcodeValue = {
       author: '',
       description: description,
+      hexCode: hexCode,
       shortCode: partials.GenerateShortCode(6),
       svgCode: partials.QRCode.svg(),
       title: title,
