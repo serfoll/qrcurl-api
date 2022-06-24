@@ -4,9 +4,15 @@ const { gql } = require('apollo-server-express')
 module.exports = gql`
   scalar DateTime
 
-  type Query {
-    qrcodes: [QRCode!]!
-    qrcode(shortCode: String!): QRCode!
+  type Mutation {
+    newQRCode(description: String, title: String, url: String!): QRCode!
+    updateQRCode(
+      id: ID!
+      description: String
+      title: String!
+      url: String!
+    ): QRCode!
+    deleteQRCode(id: ID!): Boolean!
   }
 
   type QRCode {
@@ -20,14 +26,16 @@ module.exports = gql`
     updatedAt: DateTime!
     url: String!
   }
-  type Mutation {
-    newQRCode(description: String, title: String, url: String!): QRCode!
-    updateQRCode(
-      id: ID!
-      description: String
-      title: String!
-      url: String!
-    ): QRCode!
-    deleteQRCode(id: ID!): Boolean!
+
+  type qrcodeFeed {
+    qrcodes: [QRCode]!
+    cursor: String!
+    hasNextPage: Boolean!
+  }
+
+  type Query {
+    qrcodes: [QRCode!]!
+    qrcode(shortCode: String!): QRCode!
+    qrcodeFeed(cursor: String): qrcodeFeed
   }
 `

@@ -1,6 +1,8 @@
 // Third parties module imports
 const { ApolloServer, gql } = require('apollo-server-express')
 const cors = require('cors')
+const { createComplexityLimitRule } = require('graphql-validation-complexity')
+const depthLimit = require('graphql-depth-limit')
 const express = require('express')
 const helmet = require('helmet')
 const jwt = require('jsonwebtoken')
@@ -33,14 +35,15 @@ const getAuthor = token => {
 }
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
   context: ({ req }) => {
     const token = req.headers.authorization
     const author = getAuthor(token)
 
     return { models, author }
-  }
+  },
+  resolvers,
+  typeDefs,
+  validationRules: [depthLimit(5), createComplexityLimitRule(1000)]
 })
 
 // Express Middlewares
