@@ -2,6 +2,7 @@
 const { ApolloServer, gql } = require('apollo-server-express')
 const cors = require('cors')
 const express = require('express')
+const helmet = require('helmet')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
@@ -44,6 +45,7 @@ const server = new ApolloServer({
 
 // Express Middlewares
 app.use(cors())
+app.use(helmet())
 
 server.start().then(() => {
   //Apollo server middlewares
