@@ -1,18 +1,8 @@
-const generateShortCode = require('../generateShortCode')
-const QRCodeSvg = require('qrcode-svg')
-
-let qr = new QRCodeSvg({
-  background: '#ffffff',
-  color: '#000000',
-  container: 'svg-viewbox',
-  content: 'placeholder',
-  ecl: 'Q',
-  height: 60,
-  join: true,
-  padding: 0,
-  pretty: true,
-  width: 60
-})
+const { AuthenticationError, ForbiddenError } = require('apollo-server-express')
+const jwt = require('jsonwebtoken')
+const { default: mongoose } = require('mongoose')
+const partials = require('../partials')
+require('dotenv').config()
 
 module.exports = {
   deleteQRCode: async (parent, { id }, { models }) => {
@@ -23,24 +13,40 @@ module.exports = {
       return false
     }
   },
-  newQRCode: async (parent, args, { models }) => {
-    let url = args.url
-
-    qr.content = url
+  newQRCode: async (parent, { description, title, url }, { models, user }) => {
+    partials.QRCode.content = url
 
     let qrcodeValue = {
-      description: args.description,
-      shortCode: generateShortCode(6),
-      svgCode: qr.svg(),
-      title: args.title,
+      author: '',
+      description: description,
+      shortCode: partials.GenerateShortCode(6),
+      svgCode: partials.QRCode.svg(),
+      title: title,
       url: url
     }
 
-    return await models.QRCode.create(qrcodeValue)
+    //new temp user
+    if (!user) {
+      const newAuthorId = new mongoose.Types.ObjectId()
+
+      user = await jwt.sign({ id: newAuthorId }, process.env.JWT_SECRET)
+
+      qrcodeValue.author = mongoose.Types.ObjectId(newAuthorId)
+
+      console.log(user)
+    } else qrcodeValue.author = mongoose.Types.ObjectId(user.id)
+
+    //create new qrcode
+    try {
+      return await models.QRCode.create(qrcodeValue)
+    } catch (err) {
+      console.log(err)
+      throw new Error('Error creating QRCode')
+    }
   },
   updateQRCode: async (parent, { description, id, title, url }, { models }) => {
-    qr.content = url
-    let svgCode = qr.svg()
+    partials.QRCode.content = url
+    let svgCode = partials.QRCode.svg()
 
     return await models.QRCode.findOneAndUpdate(
       {

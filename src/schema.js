@@ -10,17 +10,18 @@ module.exports = gql`
   }
 
   type QRCode {
+    author: String!
     createdAt: DateTime!
     description: String
     id: ID!
     shortCode: String!
     svgCode: String!
-    title: String!
+    title: String
     updatedAt: DateTime!
     url: String!
   }
   type Mutation {
-    newQRCode(descrition: String, title: String!, url: String!): QRCode!
+    newQRCode(description: String, title: String, url: String!): QRCode!
     updateQRCode(
       id: ID!
       description: String
