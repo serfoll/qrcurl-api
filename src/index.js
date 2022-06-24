@@ -20,7 +20,7 @@ const app = express()
 const port = process.env.PORT || 4000
 
 //
-const getUser = token => {
+const getAuthor = token => {
   if (token) {
     try {
       return jwt.verify(token, process.env.JWT_SECRET)
@@ -36,11 +36,11 @@ const server = new ApolloServer({
   resolvers,
   context: ({ req }) => {
     const token = req.headers.authorization
-    const user = getUser(token)
+    const author = getAuthor(token)
 
-    console.log(user)
+    console.log(author)
 
-    return { models, user }
+    return { models, author }
   }
 })
 

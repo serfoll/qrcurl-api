@@ -13,7 +13,11 @@ module.exports = {
       return false
     }
   },
-  newQRCode: async (parent, { description, title, url }, { models, user }) => {
+  newQRCode: async (
+    parent,
+    { description, title, url },
+    { models, author }
+  ) => {
     partials.QRCode.content = url
 
     let qrcodeValue = {
@@ -25,16 +29,27 @@ module.exports = {
       url: url
     }
 
-    //new temp user
-    if (!user) {
+    //new temp author
+    if (!author) {
       const newAuthorId = new mongoose.Types.ObjectId()
 
-      user = await jwt.sign({ id: newAuthorId }, process.env.JWT_SECRET)
+      author = await jwt.sign({ id: newAuthorId }, process.env.JWT_SECRET)
 
       qrcodeValue.author = mongoose.Types.ObjectId(newAuthorId)
 
-      console.log(user)
-    } else qrcodeValue.author = mongoose.Types.ObjectId(user.id)
+      console.log(author)
+    } else qrcodeValue.author = mongoose.Types.ObjectId(author.id)
+
+    //check for duplicates
+    const duplicate = await models.QRCode.find({
+      author: author.id,
+      url: url
+    })
+
+    if (duplicate.length > 0) {
+      console.log(duplicate)
+      return duplicate[0]
+    }
 
     //create new qrcode
     try {

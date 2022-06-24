@@ -10,7 +10,7 @@ module.exports = gql`
   }
 
   type QRCode {
-    author: String!
+    author: ID!
     createdAt: DateTime!
     description: String
     id: ID!
