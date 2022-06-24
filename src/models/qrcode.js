@@ -2,7 +2,11 @@ const mongoose = require('mongoose')
 
 const qrcodeSchema = new mongoose.Schema(
   {
-    author: { type: mongoose.ObjectId, required: true },
+    author: {
+      ref: 'Author',
+      required: true,
+      type: mongoose.Schema.Types.ObjectId
+    },
     description: { type: String },
     shortCode: { type: String, required: true, unique: true },
     svgCode: { type: String, required: true },

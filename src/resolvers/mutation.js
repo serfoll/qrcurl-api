@@ -5,9 +5,13 @@ const partials = require('../partials')
 require('dotenv').config()
 
 module.exports = {
-  deleteQRCode: async (parent, { id }, { models }) => {
+  deleteQRCode: async (parent, { id }, { models, author }) => {
+    if (!author) throw new AuthenticationError('You cannot delete this QRCode')
+
+    const qrcode = await models.QRCode.findById(id)
+
     try {
-      await models.QRCode.findOneAndRemove({ _id: id })
+      await qrcode.remove()
       return true
     } catch (err) {
       return false
@@ -41,14 +45,13 @@ module.exports = {
     } else qrcodeValue.author = mongoose.Types.ObjectId(author.id)
 
     //check for duplicates
-    const duplicate = await models.QRCode.find({
+    const qrcode = await models.QRCode.find({
       author: author.id,
       url: url
     })
 
-    if (duplicate.length > 0) {
-      console.log(duplicate)
-      return duplicate[0]
+    if (qrcode.length > 0) {
+      return qrcode[0]
     }
 
     //create new qrcode
@@ -59,9 +62,23 @@ module.exports = {
       throw new Error('Error creating QRCode')
     }
   },
-  updateQRCode: async (parent, { description, id, title, url }, { models }) => {
+  updateQRCode: async (
+    parent,
+    { description, id, title, url },
+    { models, author }
+  ) => {
+    if (!author) throw new Error('You cannot update this QRCode')
+
     partials.QRCode.content = url
+
     let svgCode = partials.QRCode.svg()
+
+    const qrcode = await models.QRCode.findById(id)
+
+    if (qrcode && String(qrcode.author) !== author.id)
+      throw new ForbiddenError(
+        'You do not have permission to update this QRCode'
+      )
 
     return await models.QRCode.findOneAndUpdate(
       {

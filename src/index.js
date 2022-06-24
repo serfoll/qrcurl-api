@@ -38,8 +38,6 @@ const server = new ApolloServer({
     const token = req.headers.authorization
     const author = getAuthor(token)
 
-    console.log(author)
-
     return { models, author }
   }
 })
