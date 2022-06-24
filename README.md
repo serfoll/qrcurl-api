@@ -34,3 +34,4 @@ QRCode generating API using qrcodejs
 ## Author
 
 - Twitter - [@sergio_fol](https://www.twitter.com/sergio_fol)
+- Github - [@serfoll](https://github.com/serfoll/)
