@@ -6,6 +6,8 @@ const depthLimit = require('graphql-depth-limit')
 const express = require('express')
 const helmet = require('helmet')
 const jwt = require('jsonwebtoken')
+const QRCodeSvg = require('qrcode-svg')
+
 require('dotenv').config()
 
 //local module imports
@@ -13,6 +15,7 @@ const db = require('./db')
 const models = require('./models')
 const resolvers = require('./resolvers')
 const typeDefs = require('./schema')
+const partials = require('./partials')
 
 //connect to db
 const DB_HOST = process.env.DB_HOST
@@ -49,6 +52,35 @@ const server = new ApolloServer({
 // Express Middlewares
 app.use(cors())
 app.use(helmet())
+
+app.get('/', async (req, res) => {
+  partials.QRCode.content = await 'http://localhost:4000/'
+
+  let qr = new QRCodeSvg({
+    background: '#ffffff',
+    color: '#000000',
+    container: 'svg-viewbox',
+    content: 'http://localhost:4000/',
+    ecl: 'Q',
+    height: 60,
+    join: true,
+    padding: 0,
+    pretty: true,
+    width: 60
+  })
+
+  let qrcodeValue = {
+    author: 'aa',
+    description: 'a',
+    hexCode: '#fff',
+    shortCode: partials.GenerateShortCode(6),
+    svgCode: qr.svg(),
+    title: 'yupp',
+    url: 'http://localhost:4000/'
+  }
+
+  res.send(qrcodeValue.svgCode)
+})
 
 server.start().then(() => {
   //Apollo server middlewares

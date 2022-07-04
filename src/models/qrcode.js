@@ -4,7 +4,6 @@ const qrcodeSchema = new mongoose.Schema(
   {
     author: {
       ref: 'Author',
-      required: true,
       type: mongoose.Schema.Types.ObjectId
     },
     description: { type: String },

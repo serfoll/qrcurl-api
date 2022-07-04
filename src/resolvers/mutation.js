@@ -2,9 +2,19 @@ const { AuthenticationError, ForbiddenError } = require('apollo-server-express')
 const jwt = require('jsonwebtoken')
 const { default: mongoose } = require('mongoose')
 const partials = require('../partials')
+const QRCodeSvg = require('qrcode-svg')
+
 require('dotenv').config()
 
 module.exports = {
+  createLocalAuthor: (parent, args, { models, author }) => {
+    if (!author) {
+      //new temp author
+      const newAuthorId = new mongoose.Types.ObjectId()
+
+      return jwt.sign({ id: newAuthorId }, process.env.JWT_SECRET)
+    } else return 'Local user already exists!'
+  },
   deleteQRCode: async (parent, { id }, { models, author }) => {
     if (!author) throw new AuthenticationError('You cannot delete this QRCode')
 
@@ -22,38 +32,42 @@ module.exports = {
     { description, hexCode, title, url },
     { models, author }
   ) => {
-    partials.QRCode.content = url
+    let qr = new QRCodeSvg({
+      background: '#ffffff',
+      color: '#000000',
+      container: 'svg-viewbox',
+      content: url,
+      ecl: 'Q',
+      height: 60,
+      join: true,
+      padding: 0,
+      pretty: true,
+      width: 60
+    })
 
     let qrcodeValue = {
-      author: '',
       description: description,
       hexCode: hexCode,
       shortCode: partials.GenerateShortCode(6),
-      svgCode: partials.QRCode.svg(),
+      svgCode: qr.svg(),
       title: title,
       url: url
     }
 
-    //new temp author
-    if (!author) {
-      const newAuthorId = new mongoose.Types.ObjectId()
+    if (author) {
+      qrcodeValue.author = author.id
 
-      author = await jwt.sign({ id: newAuthorId }, process.env.JWT_SECRET)
+      const qrcode = await models.QRCode.find({
+        author: author.id,
+        url: url
+      })
 
-      qrcodeValue.author = mongoose.Types.ObjectId(newAuthorId)
-
-      console.log(author)
-    } else qrcodeValue.author = mongoose.Types.ObjectId(author.id)
-
-    //check for duplicates
-    const qrcode = await models.QRCode.find({
-      author: author.id,
-      url: url
-    })
-
-    if (qrcode.length > 0) {
-      return qrcode[0]
+      if (qrcode.length > 0) {
+        return qrcode[0]
+      }
     }
+    // console.log(author)
+    //check for duplicates
 
     //create new qrcode
     try {

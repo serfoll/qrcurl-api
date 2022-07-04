@@ -18,10 +18,11 @@ module.exports = gql`
       url: String!
     ): QRCode!
     deleteQRCode(id: ID!): Boolean!
+    createLocalAuthor: String!
   }
 
   type QRCode {
-    author: ID!
+    author: ID
     createdAt: DateTime!
     description: String
     hexCode: String!
